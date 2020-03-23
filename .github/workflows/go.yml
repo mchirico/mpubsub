@@ -1,0 +1,66 @@
+name: Go Docker
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    # Setup gcloud CLI
+    - uses: mchirico/gcp-actions@v1
+      with:
+        version: 'latest'
+        service_account_key: ${{ secrets.OWNER }}
+
+    # Configure docker to use the gcloud command-line tool as a credential helper
+    - run: |
+        # Set up docker to authenticate
+        # via gcloud command-line tool.
+        gcloud auth configure-docker
+        gcloud components update --quiet
+
+    - name: Credentials
+      run: |
+        gsutil cp gs://montcoio/credentials/pubsub* ./credentials/.
+
+
+    - name: Test and Build
+      run: |
+        go test -race -coverprofile=coverage.txt -covermode=atomic -mod=vendor ./...
+        if [[ -s coverage.txt ]]; then bash <(curl -s https://codecov.io/bash); fi
+        go build -mod=vendor -o ./...
+      env:
+        CI: true
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        GO111MODULE: on
+
+
+    - name: Docker and Push
+      run: |
+        make
+        make push
+
+
+    # BigQuery
+    - name: Working with BigQuery
+      run: |
+       txt="Cloud build... montcoio"
+       bq query --nouse_legacy_sql 'CREATE TABLE IF NOT EXISTS  `montcoio.github.log` (msg string, timeEnter timestamp);'
+       bq query --nouse_legacy_sql  --parameter=MSG:STRING:"${txt}"  'insert into `montcoio.github.log` (msg,timeEnter) values (@MSG,CURRENT_TIMESTAMP())'
+
