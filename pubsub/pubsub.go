@@ -124,9 +124,7 @@ func (g *G) CreateSub(subName string, topic *pubsub.Topic) (*pubsub.Subscription
 func (g *G) Publish(w io.Writer, topicID, msg string) (string, error) {
 	g.Lock()
 	defer g.Unlock()
-	// projectID := "my-project-id"
-	// topicID := "my-topic"
-	// msg := "Hello World"
+
 	ctx := context.Background()
 
 	client, err := pubsub.NewClient(ctx, g.Credential.Project_id, g.opt)
@@ -155,9 +153,6 @@ func (g *G) PullMsgs(w io.Writer, subID string) ([]byte, error) {
 	defer g.Unlock()
 
 	var message []byte
-	// projectID := "my-project-id"
-	// subID := "my-sub"
-	// topic of type https://godoc.org/cloud.google.com/go/pubsub#Topic
 	ctx := context.Background()
 	client, err := pubsub.NewClient(ctx, g.Credential.Project_id, g.opt)
 	if err != nil {

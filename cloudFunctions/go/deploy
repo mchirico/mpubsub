@@ -1,0 +1,2 @@
+gcloud functions deploy GoPubSub --runtime go113 --trigger-topic gocloud
+gcloud functions logs read --limit 50

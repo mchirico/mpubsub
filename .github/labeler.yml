@@ -1,0 +1,19 @@
+pubsub:
+  - pubsub/**/*
+
+creds:
+  - credentials/**/*
+
+cmd:
+  - cmd/**/*
+
+actions:
+  - .github/**/*
+
+cloudFunctions:
+  - cloudFunctions/**/*
+
+documentation:
+  - |
+    *.md
+    ./**/*.md

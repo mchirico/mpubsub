@@ -44,6 +44,23 @@ func TestG_CreateTopic(t *testing.T) {
 	}
 }
 
+func TestG_CreateSubForCloudFunctions(t *testing.T) {
+	g := NewG()
+	topic, _ := g.CreateTopic("gocloud")
+	_, err := g.CreateSub("sub-gocloud", topic)
+	if err != nil {
+		if strings.Contains(err.Error(), "code = AlreadyExists desc = Resource ") {
+			t.Logf("This is okay... it should exist")
+		} else {
+			t.Fatal("Sub error")
+		}
+	}
+	var buf bytes.Buffer
+	g.Publish(&buf, "gocloud", "test")
+	topic.Stop()
+}
+
+
 func TestG_CreateSub(t *testing.T) {
 	g := NewG()
 	topic, _ := g.CreateTopic("test")

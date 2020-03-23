@@ -1,9 +1,8 @@
-name: Go Docker
+name: Go All Branches
 
 on:
-  push:
+  pull_request:
     branches: [ master ]
-
 
 jobs:
 
@@ -53,13 +52,13 @@ jobs:
     - name: Docker and Push
       run: |
         make
-        make push
+
 
 
     # BigQuery
     - name: Working with BigQuery
       run: |
-       txt="Cloud build... montcoio"
+       txt="Push dev... montcoio"
        bq query --nouse_legacy_sql 'CREATE TABLE IF NOT EXISTS  `montcoio.github.log` (msg string, timeEnter timestamp);'
        bq query --nouse_legacy_sql  --parameter=MSG:STRING:"${txt}"  'insert into `montcoio.github.log` (msg,timeEnter) values (@MSG,CURRENT_TIMESTAMP())'
 
