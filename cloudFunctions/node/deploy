@@ -1,0 +1,1 @@
+gcloud functions deploy helloPubSub --runtime nodejs10 --trigger-topic test

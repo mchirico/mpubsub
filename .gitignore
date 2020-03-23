@@ -40,3 +40,4 @@
 start.sh
 Notes
 
+./**/node_modules
